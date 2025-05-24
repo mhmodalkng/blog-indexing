@@ -2,7 +2,7 @@ name: Submit URLs to Google Indexing API
 
 on:
   schedule:
-    - cron: '0 * * * *'  # يشغل كل ساعة (يمكنك تغييره حسب رغبتك)
+    - cron: '0 10 * * *'  # يشغل كل ساعة (يمكنك تغييره حسب رغبتك)
   workflow_dispatch:     # لتشغيله يدوياً من GitHub متى تشاء
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.x'
 
       - name: Decode Google Service Account Key
         run: echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT_BASE64 }}" | base64 --decode > service-account.json
