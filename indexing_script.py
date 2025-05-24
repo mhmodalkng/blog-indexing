@@ -4,7 +4,7 @@ import requests
 import xml.etree.ElementTree as ET
 
 SCOPES = ['https://www.googleapis.com/auth/indexing']
-SERVICE_ACCOUNT_FILE = 'service_account.json'  # اسم ملف حساب الخدمة
+SERVICE_ACCOUNT_FILE = 'service-account.json'  # اسم ملف حساب الخدمة
 
 # تهيئة حساب الخدمة
 credentials = service_account.Credentials.from_service_account_file(
