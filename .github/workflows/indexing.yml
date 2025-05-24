@@ -6,52 +6,23 @@ on:
   workflow_dispatch:     # لتشغيله يدوياً من GitHub متى تشاء
 
 jobs:
-  submit_urls:
+  indexing:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Python
+    - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.x'
 
+    - name: Write service account json to file
+      run: echo "${{ secrets.SERVICE_ACCOUNT_JSON }}" > service_account.json
+
     - name: Install dependencies
-      run: pip install google-auth requests
+      run: pip install google-auth google-api-python-client requests
 
-    - name: Submit URLs to Google Indexing API
-      env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        BLOG_URL: 'https://vlogars.blogspot.com'
-      run: |
-        import os
-        import json
-        import requests
-        from google.oauth2 import service_account
-        from google.auth.transport.requests import AuthorizedSession
-
-        # تحميل بيانات حساب الخدمة من متغير البيئة (مُشفر في secrets)
-        credentials_info = json.loads(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
-        credentials = service_account.Credentials.from_service_account_info(
-            credentials_info,
-            scopes=["https://www.googleapis.com/auth/indexing"],
-        )
-        authed_session = AuthorizedSession(credentials)
-
-        # هنا يمكنك تعديل دالة الحصول على روابط المقالات (مثلاً من ملف أو API أو مجلد)
-        # للبساطة سنرسل صفحة واحدة فقط الآن
-        urls = [
-            f"{os.environ['BLOG_URL']}/2025/05/sample-article.html"
-        ]
-
-        endpoint = "https://indexing.googleapis.com/v3/urlNotifications:publish"
-
-        for url in urls:
-            body = {
-                "url": url,
-                "type": "URL_UPDATED"
-            }
-            response = authed_session.post(endpoint, json=body)
-            print(f"Submitted {url}: {response.status_code} - {response.text}")
+    - name: Run indexing script
+      run: python indexing_script.py
